@@ -1,35 +1,60 @@
 {
-  "name": "project-time",
-  "displayName": "Project Time",
-  "description": "",
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.95.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [],
-  "main": "./extension.js",
-  "contributes": {
-    "commands": [
-    {
-      "command": "project-time.showTimespend",
-      "title": "Show Time Spend"
-    }
-  ]
-  },
-  "scripts": {
-    "lint": "eslint .",
-    "pretest": "npm run lint",
-    "test": "vscode-test"
-  },
-  "devDependencies": {
-    "@types/vscode": "^1.95.0",
-    "@types/mocha": "^10.0.9",
-    "@types/node": "20.x",
-    "eslint": "^9.13.0",
-    "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "name": "project-time-tracker",
+    "displayName": "Project Time Tracker",
+    "description": "Track the time spent on each project with a timer visible in the sidebar. Persistent per-project data storage.",
+    "version": "1.0.0",
+    "publisher": "vinay-dev",
+    "engines": {
+      "vscode": "^1.75.0"
+    },
+    "categories": [
+      "Other"
+    ],
+    "activationEvents": [
+      "onStartupFinished"
+    ],
+    "main": "./extension.js",
+    "contributes": {
+      "commands": [
+        {
+          "command": "project-time.startTimer",
+          "title": "Start Timer",
+          "category": "Project Time Tracker"
+        },
+        {
+          "command": "project-time.stopTimer",
+          "title": "Stop Timer",
+          "category": "Project Time Tracker"
+        },
+        {
+          "command": "project-time.showTimeSpent",
+          "title": "Show Time Spent",
+          "category": "Project Time Tracker"
+        }
+      ],
+      "viewsContainers": {
+        "activitybar": [
+          {
+            "id": "projectTimer",
+            "title": "Time Tracker",
+            "icon": "media/timeline.svg"
+          }
+        ]
+      },
+      "views": {
+        "projectTimer": [
+          {
+            "id": "projectTimerSidebar",
+            "name": "Project Timer"
+          }
+        ]
+      }
+    },
+    "scripts": {
+      "vscode:prepublish": "npx vsce package",
+      "package": "npx vsce package",
+      "publish": "npx vsce publish"
+    },
+    "dependencies": {}
   }
-}
+  

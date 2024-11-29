@@ -1,138 +1,105 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
 const path = require('path');
 const fs = require('fs');
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-
-/**
- * @param {vscode.ExtensionContext} context
- */
 function activate(context) {
+    const tracker = new TimeTracker(context.workspaceState);
 
-	const tracker = new TimeTracker(context.workspaceState)
-	
-	tracker.startTracking()
-	// const disposable = vscode.commands.registerCommand('project-time.startTimer', function () {
-	// 	tracker.loadProjectData();
-	// });
+    // Register the Sidebar View
+    const timerViewProvider = new TimerViewProvider(tracker);
+    vscode.window.registerTreeDataProvider('projectTimerSidebar', timerViewProvider);
 
-	const disposable2 = vscode.commands.registerCommand('project-time.showTimespend', function () {
-		tracker.showTimeSpent()
-	})
+    // Commands for controlling the timer
+    const showCommand = vscode.commands.registerCommand('project-time.showTimeSpent', () => tracker.showTimeSpent());
 
-	// Call the check function on activation
+    context.subscriptions.push(showCommand);
+    tracker.startTracking(timerViewProvider);
 }
 
-class TimeTracker{
-	constructor(workspaceState){
-		this.starttime = Date.now();
-		this.workspaceState = workspaceState
-		this.workspaceFolder = vscode.workspace.workspaceFolders?.[0]
-		this.dataFilePath = this.workspaceFolder ? path.join(this.workspaceFolder.uri.fsPath, '.vscode', 'timer-data.json') : null;
-		this.checkAndPromptForTimer(0);
-		this.totaltime = this.loadProjectData()
+function deactivate() {}
 
-	}
+// Class for managing project-specific timer data
+class TimeTracker {
+    constructor(workspaceState) {
+        this.startTime = null; 
+        this.totalTime = 0; 
+        this.workspaceState = workspaceState;
+        this.workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+        this.dataFilePath = this.workspaceFolder
+            ? path.join(this.workspaceFolder.uri.fsPath, '.vscode', 'timer-data.json')
+            : null;
+        this.loadProjectData(); 
+        this.checkAndPromptForTimer();
+    }
 
-	startTracking(){
-		vscode.window.onDidChangeWindowState((state)=>{
-			if(state.focused){
-				if(!this.starttime)
-					this.starttime = Date.now()
-			}else{
-				this.updateTime()
-			}
-		})
+    startTracking(viewProvider) {
+        vscode.window.onDidChangeWindowState((state) => {
+            if (state.focused) {
+                if (!this.startTime) this.startTime = Date.now();
+            } else {
+                this.updateTime();
+                if (viewProvider) viewProvider.refresh(); // Update sidebar on focus loss
+            }
+        });
 
-		vscode.workspace.onDidCloseTextDocument((state)=>{
-			this.updateTime()
-		})
-		
-		vscode.workspace.onDidChangeWorkspaceFolders((s)=>{
-			this.updateTime()
-		})
+        vscode.workspace.onDidSaveTextDocument(() => {
+            this.updateTime();
+            if (viewProvider) viewProvider.refresh(); // Refresh sidebar
+        });
+    }
 
-		vscode.workspace.onDidSaveTextDocument((e)=>{
-			this.updateTime()
-		})
-	}
 
-	updateTime(){
-		if(this.starttime){
-			const etime = (Date.now() - this.starttime)/1000 // spent time in sec.
-			this.totaltime += etime;
-			this.saveProjectData({"data_file_path":this.dataFilePath, "total_time":this.totaltime, "last_updated":Date.now()})
-			// this.workspaceState.update('timespent',this.totaltime)
-			this.starttime = 0
-		}
-	}
+    updateTime() {
+        if (this.startTime) {
+            const elapsedTime = (Date.now() - this.startTime) / 1000;
+            this.totalTime += elapsedTime;
+            this.saveProjectData({ totalTime: this.totalTime, lastUpdated: Date.now() });
+            this.startTime = null; // Reset the start time
+        }
+    }
 
-	showTimeSpent(){
+    showTimeSpent() {
+        const time = {
+            hours: Math.floor(this.totalTime / 3600),
+            minutes: Math.floor((this.totalTime % 3600) / 60),
+            seconds: Math.floor(this.totalTime % 60),
+        };
+        vscode.window.showInformationMessage(
+            `Total time spent: ${time.hours.toString().padStart(2, '0')}:${time.minutes
+                .toString()
+                .padStart(2, '0')}:${time.seconds.toString().padStart(2, '0')}`
+        );
+    }
 
-		this.checkAndPromptForTimer(0)
-
-		const time={
-			"hours" : parseInt(this.totaltime / 3600),
-			"minutes": parseInt((this.totaltime % 3600)/60)
-		}
-
-		if(this.totaltime)
-		vscode.window.showInformationMessage(`Total time spent: ${time.hours.toString().padStart(2,'0')}: ${time.minutes.toString().padStart(2,'0')}`)
-	}
-
-	loadProjectData = () => {
+    loadProjectData() {
         if (!this.dataFilePath) {
             vscode.window.showErrorMessage('No workspace folder found!');
-            return 0;
+            return;
         }
 
         if (fs.existsSync(this.dataFilePath)) {
             const data = JSON.parse(fs.readFileSync(this.dataFilePath, 'utf8'));
-            vscode.window.showInformationMessage(
-                `Loaded project data.`
-            );
-            return data.total_time;
+            this.totalTime = data.totalTime || 0;
         } else {
-            vscode.window.showWarningMessage('Try Again, initializing the data for the project.',['- if already there was timeline','then try to switch to the initial project folder']);
-            this.saveProjectData({"data_file_path":this.dataFilePath, "total_time":0, "last_updated":Date.now()})
-			return 0;
-        }
-    };
-
-	saveProjectData = (data) => {
-        if (!this.dataFilePath) {
-            vscode.window.showErrorMessage('No workspace folder found!');
-            return;
-        }
-
-        this.ensureVSCodeFolder();
-
-        fs.writeFileSync(this.dataFilePath, JSON.stringify(data, null, 2));
-        vscode.window.showInformationMessage('Project-specific data saved!');
-    };
-
-	ensureVSCodeFolder() {
-        if (this.workspaceFolder) {
-            const vscodeDir = path.join(this.workspaceFolder.uri.fsPath, '.vscode');
-            if (!fs.existsSync(vscodeDir)) {
-                fs.mkdirSync(vscodeDir);
-            }
+            this.saveProjectData({ totalTime: 0, lastUpdated: Date.now() });
         }
     }
 
+    saveProjectData(data) {
+        if (!this.dataFilePath) return;
+        this.ensureVSCodeFolder();
+        fs.writeFileSync(this.dataFilePath, JSON.stringify(data, null, 2));
+    }
 
-
-	// Check for existing timer data and prompt user
-    checkAndPromptForTimer(flag=1) {
-        if (!this.dataFilePath) {
-            vscode.window.showErrorMessage('No workspace folder found!');
-            return;
+    ensureVSCodeFolder() {
+        if (this.workspaceFolder) {
+            const vscodeDir = path.join(this.workspaceFolder.uri.fsPath, '.vscode');
+            if (!fs.existsSync(vscodeDir)) fs.mkdirSync(vscodeDir);
         }
+    }
 
-        // Check if timer data exists
+    checkAndPromptForTimer() {
+        if (!this.dataFilePath) return;
         if (!fs.existsSync(this.dataFilePath)) {
             vscode.window
                 .showInformationMessage(
@@ -142,32 +109,75 @@ class TimeTracker{
                 )
                 .then((selection) => {
                     if (selection === 'Yes') {
-                        // Initialize timer data
-                        this.ensureVSCodeFolder();
-                        const initialData = { timer: 0, lastUpdated: new Date().toISOString() };
-                        fs.writeFileSync(this.dataFilePath, JSON.stringify(initialData, null, 2));
+                        this.saveProjectData({ totalTime: 0, lastUpdated: Date.now() });
                         vscode.window.showInformationMessage('Timer initialized for this project!');
-                    } else {
-                        vscode.window.showInformationMessage('No timer created.');
                     }
                 });
-        } else {
-			if(flag)
-            vscode.window.showInformationMessage('Timer data already exists for this project.');
         }
     }
-
 }
 
+// Class for the Timer Sidebar View
+class TimerViewProvider {
+    constructor(tracker) {
+        this.tracker = tracker;
+        this._onDidChangeTreeData = new vscode.EventEmitter();
+        this.onDidChangeTreeData = this._onDidChangeTreeData.event;
+    }
 
-// This method is called when your extension is deactivated
-function deactivate() {
-	
+    refresh() {
+        this._onDidChangeTreeData.fire();
+    }
+
+    getTreeItem(element) {
+        return element;
+    }
+
+    getChildren() {
+        const time = this.tracker.totalTime || 0;
+        const hours = Math.floor(time / 3600);
+        const minutes = Math.floor((time % 3600) / 60);
+        const seconds = Math.floor(time % 60);
+    
+        const timeString = `${hours.toString().padStart(2, '0')}:${minutes
+            .toString()
+            .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    
+            let codertype = "";
+            let temp = Math.floor(time / 60)
+
+            if (temp === 0) {
+                codertype = "tempr Not Started";
+            } else if (temp > 0 && temp <= 600) { // Less than or equal to 10 minutes
+                codertype = "Just Begin";
+            } else if (temp > 600 && temp <= 1800) { // Between 10 minutes and 30 minutes
+                codertype = "Warming Up!";
+            } else if (temp > 1800 && temp <= 2700) { // Between 30 minutes and 45 minutes
+                codertype = "Yay, I love the work done!";
+            } else if (temp > 2700 && temp <= 3600) { // Between 45 minutes and 1 hour
+                codertype = "You're in the zone!";
+            } else if (temp > 3600 && temp <= 4500) { // Between 1 hour and 1 hour 15 minutes
+                codertype = "Keep Crushing It!";
+            } else if (temp > 4500 && temp <= 5400) { // Between 1 hour 15 minutes and 1 hour 30 minutes
+                codertype = "Wow, amazing progress!";
+            } else if (temp > 5400) { // More than 1 hour 30 minutes
+                codertype = "Salutation! Exceptional effort!";
+            }
+            
+
+        const treeItem = new vscode.TreeItem(`${timeString}`);
+        treeItem.description = `${codertype}`;
+        treeItem.iconPath = {
+            light: path.join(__filename, '..', '..', 'resources', 'light', 'icon.png'),
+            dark: path.join(__filename, '..', '..', 'resources', 'dark', 'icon.png'),
+        };
+    
+        return [treeItem];
+    }
+    
 }
-
-
 
 module.exports = {
-	activate,
-	deactivate
-}
+    activate,
+    deactivate,
+};
