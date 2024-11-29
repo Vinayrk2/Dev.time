@@ -56,4 +56,4 @@ The **Project Timer VS Code Extension** helps developers track the time spent on
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/project-timer-vscode-extension.git
+   git clone https://github.com/Vinayrk2/timeline-tracker.git
