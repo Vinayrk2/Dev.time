@@ -16,19 +16,19 @@ function activate(context) {
     tracker.startTracking(timerViewProvider);
 }
 
-function deactivate() {}
+function deactivate() { }
 
 // Class for managing project-specific timer data
 class TimeTracker {
     constructor(workspaceState) {
-        this.startTime = null; 
-        this.totalTime = 0; 
+        this.startTime = null;
+        this.totalTime = 0;
         this.workspaceState = workspaceState;
         this.workspaceFolder = vscode.workspace.workspaceFolders?.[0];
         this.dataFilePath = this.workspaceFolder
             ? path.join(this.workspaceFolder.uri.fsPath, '.vscode', 'timer-data.json')
             : null;
-        this.loadProjectData(); 
+        this.loadProjectData();
         this.checkAndPromptForTimer();
     }
 
@@ -135,46 +135,65 @@ class TimerViewProvider {
 
     getChildren() {
         const time = this.tracker.totalTime || 0;
+    
+        // Convert time to hours, minutes, and seconds
         const hours = Math.floor(time / 3600);
         const minutes = Math.floor((time % 3600) / 60);
         const seconds = Math.floor(time % 60);
     
+        // Format time as HH:MM:SS
         const timeString = `${hours.toString().padStart(2, '0')}:${minutes
             .toString()
             .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     
-            let codertype = "";
-            let temp = Math.floor(time / 60)
-
-            if (temp === 0) {
-                codertype = "tempr Not Started";
-            } else if (temp > 0 && temp <= 10) { // Less than or equal to 10 minutes
-                codertype = "Just Begin";
-            } else if (temp > 10 && temp <= 30) { // Between 10 minutes and 30 minutes
-                codertype = "Warming Up!";
-            } else if (temp > 30 && temp <= 45) { // Between 30 minutes and 45 minutes
-                codertype = "Yay, I love the work done!";
-            } else if (temp > 45 && temp <= 60) { // Between 45 minutes and 1 hour
-                codertype = "You're in the zone!";
-            } else if (temp > 60 && temp <= 75) { // Between 1 hour and 1 hour 15 minutes
-                codertype = "Keep Crushing It!";
-            } else if (temp > 75 && temp <= 90) { // Between 1 hour 15 minutes and 1 hour 30 minutes
-                codertype = "Wow, amazing progress!";
-            } else if (temp > 90) { // More than 1 hour 30 minutes
-                codertype = "Salute! Exceptional effort!";
-            }
-            
-
-        const treeItem = new vscode.TreeItem(`${timeString}`);
-        treeItem.description = `${codertype}`;
-        treeItem.iconPath = {
-            light: path.join(__filename, '..', '..', 'resources', 'light', 'icon.png'),
-            dark: path.join(__filename, '..', '..', 'resources', 'dark', 'icon.png'),
-        };
+        // Determine coder type based on time spent
+        let coderType = "";
+        const timeInMinutes = Math.floor(time / 60);
     
-        return [treeItem];
+        if (timeInMinutes === 0) {
+            coderType = "Not Started Yet";
+        } else if (timeInMinutes <= 10) {
+            coderType = "Just Getting Started";
+        } else if (timeInMinutes <= 30) {
+            coderType = "Warming Up!";
+        } else if (timeInMinutes <= 45) {
+            coderType = "Loving the Progress!";
+        } else if (timeInMinutes <= 60) {
+            coderType = "In the Zone!";
+        } else if (timeInMinutes <= 75) {
+            coderType = "Keep Crushing It!";
+        } else if (timeInMinutes <= 90) {
+            coderType = "Amazing Dedication!";
+        } else {
+            coderType = "Outstanding Effort!";
+        }
+    
+        // Create a TreeItem for the time display
+        const timeItem = new vscode.TreeItem(`⏱️ Time Spent: ${timeString}`);
+        timeItem.description = ""; // Keep empty as it appears like a box
+    
+        // Create a TreeItem for the coder type
+        const coderTypeItem = new vscode.TreeItem(`💡 Coder Type: ${coderType}`);
+        coderTypeItem.description = ""; // Empty for consistent appearance
+    
+        // Create a separator line
+        const separatorItem = new vscode.TreeItem("────────────────────────────");
+        separatorItem.description = ""; // Purely visual item
+        separatorItem.iconPath = new vscode.ThemeIcon("dash");
+    
+        // Create a note at the bottom
+        const noteItem = new vscode.TreeItem(
+            "Note: This time only tracks active coding in VS Code."
+        );
+        noteItem.description =
+            "Testing, output observation, etc., are excluded for now.";
+        noteItem.iconPath = new vscode.ThemeIcon("info");
+    
+        // Return all items in order to mimic the requested layout
+        return [timeItem, coderTypeItem, separatorItem, noteItem];
     }
     
+
 }
 
 module.exports = {
