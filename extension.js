@@ -15,9 +15,9 @@ function activate(context) {
 	const tracker = new TimeTracker(context.workspaceState)
 	
 	tracker.startTracking()
-	const disposable = vscode.commands.registerCommand('project-time.helloWorld', function () {
-		tracker.updateTime();
-	});
+	// const disposable = vscode.commands.registerCommand('project-time.startTimer', function () {
+	// 	tracker.loadProjectData();
+	// });
 
 	const disposable2 = vscode.commands.registerCommand('project-time.showTimespend', function () {
 		tracker.showTimeSpent()
@@ -25,23 +25,6 @@ function activate(context) {
 
 	// Call the check function on activation
 }
-
-// let time = {
-// 	hours: 0,
-// 	minutes: 0
-// }
-// // Function for updating the timer
-// function updateTime() {
-// 	setInterval(()=>{
-// 		time.minutes++;
-// 		if(time.minutes >= 60){
-// 			time.minutes = 0
-// 			time.hours++;
-// 		}	
-// 		vscode.window.setStatusBarMessage(`${time.hours.toString().padStart(2,'0')}:${time.minutes.toString().padStart(2,'0')}`)
-// 	}, 1000)
-// }
-
 
 class TimeTracker{
 	constructor(workspaceState){

@@ -1,42 +1,59 @@
-# Welcome to your VS Code Extension
+# Project Timer VS Code Extension
 
-## What's in the folder
+## Overview
 
-* This folder contains all of the files necessary for your extension.
-* `package.json` - this is the manifest file in which you declare your extension and command.
-  * The sample plugin registers a command and defines its title and command name. With this information VS Code can show the command in the command palette. It doesn’t yet need to load the plugin.
-* `extension.js` - this is the main file where you will provide the implementation of your command.
-  * The file exports one function, `activate`, which is called the very first time your extension is activated (in this case by executing the command). Inside the `activate` function we call `registerCommand`.
-  * We pass the function containing the implementation of the command as the second parameter to `registerCommand`.
+The **Project Timer VS Code Extension** helps developers track the time spent on specific projects. Each project's timer is stored locally and persists across sessions. It is ideal for managing productivity and monitoring time allocation for various projects.
 
-## Get up and running straight away
+---
 
-* Press `F5` to open a new window with your extension loaded.
-* Run your command from the command palette by pressing (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac) and typing `Hello World`.
-* Set breakpoints in your code inside `extension.js` to debug your extension.
-* Find output from your extension in the debug console.
+## Features
 
-## Make changes
+- **Project-Specific Timer**: Tracks time spent on individual projects, stored locally in `.vscode/timer-data.json`.
+- **Prompt on Open**: Automatically asks users to create a timer if none exists when a project is opened.
+- **Persistent Storage**: Timer data is saved in the `.vscode` folder, ensuring it is specific to each project.
+- **Commands**: Provides commands to save, load, and initialize project timers.
 
-* You can relaunch the extension from the debug toolbar after changing code in `extension.js`.
-* You can also reload (`Ctrl+R` or `Cmd+R` on Mac) the VS Code window with your extension to load your changes.
+---
 
-## Explore the API
+## Commands
 
-* You can open the full set of our API when you open the file `node_modules/@types/vscode/index.d.ts`.
+| Command                     | Description                                             | Usage                                |
+|-----------------------------|---------------------------------------------------------|--------------------------------------|
+| `extension.saveProjectData` | Saves the current timer data to `.vscode/timer-data.json`. | Run to persist timer updates.        |
+| `extension.loadProjectData` | Loads the current project's timer data.                | Displays saved timer data in VS Code. |
+| `extension.promptForTimer`  | Prompts the user to create a timer if none exists.      | Automatically runs on project open.  |
 
-## Run tests
+---
 
-* Install the [Extension Test Runner](https://marketplace.visualstudio.com/items?itemName=ms-vscode.extension-test-runner)
-* Open the Testing view from the activity bar and click the Run Test" button, or use the hotkey `Ctrl/Cmd + ; A`
-* See the output of the test result in the Test Results view.
-* Make changes to `test/extension.test.js` or create new test files inside the `test` folder.
-  * The provided test runner will only consider files matching the name pattern `**.test.js`.
-  * You can create folders inside the `test` folder to structure your tests any way you want.
+## How It Works
 
-## Go further
+1. **Activation**:
+   - The extension activates when VS Code starts or when a folder or workspace containing a `.vscode` directory is opened.
 
- * [Follow UX guidelines](https://code.visualstudio.com/api/ux-guidelines/overview) to create extensions that seamlessly integrate with VS Code's native interface and patterns.
- * [Publish your extension](https://code.visualstudio.com/api/working-with-extensions/publishing-extension) on the VS Code extension marketplace.
- * Automate builds by setting up [Continuous Integration](https://code.visualstudio.com/api/working-with-extensions/continuous-integration).
- * Integrate to the [report issue](https://code.visualstudio.com/api/get-started/wrapping-up#issue-reporting) flow to get issue and feature requests reported by users.
+2. **Timer Initialization**:
+   - On activation, the extension checks for a `timer-data.json` file in `.vscode`.
+   - If no data is found, the user is prompted to create a timer.
+
+3. **Persistent Storage**:
+   - The timer data is stored in a project-specific JSON file located at `.vscode/timer-data.json`.
+
+4. **File Structure**:
+   - Timer data is stored in JSON format. Example:
+     ```json
+     {
+       "timer": 3600,
+       "lastUpdated": "2024-11-28T12:00:00Z"
+     }
+     ```
+
+5. **User Prompts**:
+   - If no timer exists, the extension prompts the user with:
+     > *"No timer data found for this project. Do you want to create a timer?"*
+
+---
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/project-timer-vscode-extension.git

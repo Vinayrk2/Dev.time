@@ -1,65 +1,59 @@
-# project-time README
+# Project Timer VS Code Extension
 
-This is the README for your extension "project-time". After writing up a brief description, we recommend including the following sections.
+## Overview
 
-## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+The **Project Timer VS Code Extension** helps developers track the time spent on specific projects. Each project's timer is stored locally and persists across sessions. It is ideal for managing productivity and monitoring time allocation for various projects.
 
 ---
 
-## Working with Markdown
+## Features
 
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
+- **Project-Specific Timer**: Tracks time spent on individual projects, stored locally in `.vscode/timer-data.json`.
+- **Prompt on Open**: Automatically asks users to create a timer if none exists when a project is opened.
+- **Persistent Storage**: Timer data is saved in the `.vscode` folder, ensuring it is specific to each project.
+- **Commands**: Provides commands to save, load, and initialize project timers.
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets
+---
 
-## For more information
+## Commands
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+| Command                     | Description                                             | Usage                                |
+|-----------------------------|---------------------------------------------------------|--------------------------------------|
+| `extension.saveProjectData` | Saves the current timer data to `.vscode/timer-data.json`. | Run to persist timer updates.        |
+| `extension.loadProjectData` | Loads the current project's timer data.                | Displays saved timer data in VS Code. |
+| `extension.promptForTimer`  | Prompts the user to create a timer if none exists.      | Automatically runs on project open.  |
 
-**Enjoy!**
+---
+
+## How It Works
+
+1. **Activation**:
+   - The extension activates when VS Code starts or when a folder or workspace containing a `.vscode` directory is opened.
+
+2. **Timer Initialization**:
+   - On activation, the extension checks for a `timer-data.json` file in `.vscode`.
+   - If no data is found, the user is prompted to create a timer.
+
+3. **Persistent Storage**:
+   - The timer data is stored in a project-specific JSON file located at `.vscode/timer-data.json`.
+
+4. **File Structure**:
+   - Timer data is stored in JSON format. Example:
+     ```json
+     {
+       "timer": 3600,
+       "lastUpdated": "2024-11-28T12:00:00Z"
+     }
+     ```
+
+5. **User Prompts**:
+   - If no timer exists, the extension prompts the user with:
+     > *"No timer data found for this project. Do you want to create a timer?"*
+
+---
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/project-timer-vscode-extension.git
