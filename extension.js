@@ -148,20 +148,20 @@ class TimerViewProvider {
 
             if (temp === 0) {
                 codertype = "tempr Not Started";
-            } else if (temp > 0 && temp <= 600) { // Less than or equal to 10 minutes
+            } else if (temp > 0 && temp <= 10) { // Less than or equal to 10 minutes
                 codertype = "Just Begin";
-            } else if (temp > 600 && temp <= 1800) { // Between 10 minutes and 30 minutes
+            } else if (temp > 10 && temp <= 30) { // Between 10 minutes and 30 minutes
                 codertype = "Warming Up!";
-            } else if (temp > 1800 && temp <= 2700) { // Between 30 minutes and 45 minutes
+            } else if (temp > 30 && temp <= 45) { // Between 30 minutes and 45 minutes
                 codertype = "Yay, I love the work done!";
-            } else if (temp > 2700 && temp <= 3600) { // Between 45 minutes and 1 hour
+            } else if (temp > 45 && temp <= 60) { // Between 45 minutes and 1 hour
                 codertype = "You're in the zone!";
-            } else if (temp > 3600 && temp <= 4500) { // Between 1 hour and 1 hour 15 minutes
+            } else if (temp > 60 && temp <= 75) { // Between 1 hour and 1 hour 15 minutes
                 codertype = "Keep Crushing It!";
-            } else if (temp > 4500 && temp <= 5400) { // Between 1 hour 15 minutes and 1 hour 30 minutes
+            } else if (temp > 75 && temp <= 90) { // Between 1 hour 15 minutes and 1 hour 30 minutes
                 codertype = "Wow, amazing progress!";
-            } else if (temp > 5400) { // More than 1 hour 30 minutes
-                codertype = "Salutation! Exceptional effort!";
+            } else if (temp > 90) { // More than 1 hour 30 minutes
+                codertype = "Salute! Exceptional effort!";
             }
             
 

@@ -5,56 +5,57 @@
     "version": "1.0.0",
     "publisher": "vinay-dev",
     "engines": {
-      "vscode": "^1.75.0"
+        "vscode": "^1.75.0"
     },
     "categories": [
-      "Other"
+        "Other"
     ],
     "activationEvents": [
-      "onStartupFinished"
+        "onStartupFinished"
     ],
     "main": "./extension.js",
     "contributes": {
-      "commands": [
-        {
-          "command": "project-time.startTimer",
-          "title": "Start Timer",
-          "category": "Project Time Tracker"
+        "commands": [
+            {
+                "command": "project-time.startTimer",
+                "title": "Start Timer",
+                "category": "Project Time Tracker"
+            },
+            {
+                "command": "project-time.stopTimer",
+                "title": "Stop Timer",
+                "category": "Project Time Tracker"
+            },
+            {
+                "command": "project-time.showTimeSpent",
+                "title": "Show Time Spent",
+                "category": "Project Time Tracker"
+            }
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "projectTimer",
+                    "title": "Time Tracker",
+                    "icon": "media/timeline.svg"
+                }
+            ]
         },
-        {
-          "command": "project-time.stopTimer",
-          "title": "Stop Timer",
-          "category": "Project Time Tracker"
-        },
-        {
-          "command": "project-time.showTimeSpent",
-          "title": "Show Time Spent",
-          "category": "Project Time Tracker"
+        "views": {
+            "projectTimer": [
+                {
+                    "id": "projectTimerSidebar",
+                    "name": "Project Timer"
+                }
+            ]
         }
-      ],
-      "viewsContainers": {
-        "activitybar": [
-          {
-            "id": "projectTimer",
-            "title": "Time Tracker",
-            "icon": "media/timeline.svg"
-          }
-        ]
-      },
-      "views": {
-        "projectTimer": [
-          {
-            "id": "projectTimerSidebar",
-            "name": "Project Timer"
-          }
-        ]
-      }
     },
     "scripts": {
-      "vscode:prepublish": "npx vsce package",
-      "package": "npx vsce package",
-      "publish": "npx vsce publish"
+        "vscode:prepublish": "npx vsce package",
+        "package": "npx vsce package",
+        "publish": "npx vsce publish"
     },
-    "dependencies": {}
-  }
-  
+    "devDependencies": {
+        "vsce": "^2.15.0"
+    }
+}
