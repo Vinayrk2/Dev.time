@@ -56,4 +56,4 @@ The **Project Timer VS Code Extension** helps developers track the time spent on
 
 ### I've published on the vs code marketplace, you can use it. Here is the link:
 
-[https://marketplace.visualstudio.com/items?itemName=vinay-dev.dev-time](https://marketplace.visualstudio.com/items?itemName=vinay-dev.dev-time)
+[Try "Dev.time" Extension ](https://marketplace.visualstudio.com/items?itemName=vinay-dev.dev-time)
