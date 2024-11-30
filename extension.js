@@ -1,6 +1,6 @@
-const vscode = require('vscode');
-const path = require('path');
-const fs = require('fs');
+import * as vscode from 'vscode'
+import * as path from 'path'
+import * as fs from 'fs'
 
 function activate(context) {
     const tracker = new TimeTracker(context.workspaceState);
