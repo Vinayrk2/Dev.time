@@ -1,31 +1,26 @@
 {
-    "name": "project-time-tracker",
-    "displayName": "Project Time Tracker",
+    "name": "dev-time",
+    "displayName": "Dev.time",
     "description": "Track the time spent on each project with a timer visible in the sidebar. Persistent per-project data storage.",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "publisher": "vinay-dev",
+    "icon": "media/banner.jpg",
     "engines": {
         "vscode": "^1.75.0"
     },
     "categories": [
         "Other"
     ],
+    "galleryBanner": {
+        "image": "media/banner.jpg"
+    }
+    ,
     "activationEvents": [
         "onStartupFinished"
     ],
     "main": "./extension.js",
     "contributes": {
         "commands": [
-            {
-                "command": "project-time.startTimer",
-                "title": "Start Timer",
-                "category": "Project Time Tracker"
-            },
-            {
-                "command": "project-time.stopTimer",
-                "title": "Stop Timer",
-                "category": "Project Time Tracker"
-            },
             {
                 "command": "project-time.showTimeSpent",
                 "title": "Show Time Spent",
@@ -37,7 +32,7 @@
                 {
                     "id": "projectTimer",
                     "title": "Time Tracker",
-                    "icon": "media/timeline.jpg"
+                    "icon": "media/b24.svg"
                 }
             ]
         },
@@ -49,10 +44,14 @@
                 }
             ]
         }
+    },  "scripts": {
+        "lint": "eslint .",
+        "pretest": "npm run lint",
+        "test": "vscode-test"
     },
-    "scripts": {
-        "vscode:prepublish": "npx vsce package",
-        "package": "npx vsce package",
-        "publish": "npx vsce publish"
+    "pricing": "Free",
+    "repository": {
+        "url": "https://github.com/Vinayrk2/timeline-tracker.git",
+        "directory": "project-time"
     }
 }

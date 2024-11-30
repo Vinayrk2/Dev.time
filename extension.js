@@ -1,6 +1,6 @@
-import * as vscode from 'vscode'
-import * as path from 'path'
-import * as fs from 'fs'
+const vscode = require("vscode")
+const path = require("path")
+const fs = require("fs")
 
 function activate(context) {
     const tracker = new TimeTracker(context.workspaceState);
@@ -26,10 +26,11 @@ class TimeTracker {
         this.workspaceState = workspaceState;
         this.workspaceFolder = vscode.workspace.workspaceFolders?.[0];
         this.dataFilePath = this.workspaceFolder
-            ? path.join(this.workspaceFolder.uri.fsPath, '.vscode', 'timer-data.json')
-            : null;
-        this.loadProjectData();
+        ? path.join(this.workspaceFolder.uri.fsPath, '.vscode', 'timer-data.json')
+        : null;
         this.checkAndPromptForTimer();
+        this.loadProjectData();
+        this.selection = true
     }
 
     startTracking(viewProvider) {
@@ -58,18 +59,18 @@ class TimeTracker {
         }
     }
 
-    showTimeSpent() {
-        const time = {
-            hours: Math.floor(this.totalTime / 3600),
-            minutes: Math.floor((this.totalTime % 3600) / 60),
-            seconds: Math.floor(this.totalTime % 60),
-        };
-        vscode.window.showInformationMessage(
-            `Total time spent: ${time.hours.toString().padStart(2, '0')}:${time.minutes
-                .toString()
-                .padStart(2, '0')}:${time.seconds.toString().padStart(2, '0')}`
-        );
-    }
+    // showTimeSpent() {
+    //     const time = {
+    //         hours: Math.floor(this.totalTime / 3600),
+    //         minutes: Math.floor((this.totalTime % 3600) / 60),
+    //         seconds: Math.floor(this.totalTime % 60),
+    //     };
+    //     vscode.window.showInformationMessage(
+    //         `Total time spent: ${time.hours.toString().padStart(2, '0')}:${time.minutes
+    //             .toString()
+    //             .padStart(2, '0')}:${time.seconds.toString().padStart(2, '0')}`
+    //     );
+    // }
 
     loadProjectData() {
         if (!this.dataFilePath) {
@@ -86,6 +87,7 @@ class TimeTracker {
     }
 
     saveProjectData(data) {
+        if(!this.selection) return;
         if (!this.dataFilePath) return;
         this.ensureVSCodeFolder();
         fs.writeFileSync(this.dataFilePath, JSON.stringify(data, null, 2));
@@ -112,8 +114,12 @@ class TimeTracker {
                         this.saveProjectData({ totalTime: 0, lastUpdated: Date.now() });
                         vscode.window.showInformationMessage('Timer initialized for this project!');
                     }
+                    else{
+                        this.selection = false
+                    }
                 });
         }
+        this.startTime = Date.now()
     }
 }
 

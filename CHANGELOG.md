@@ -1,9 +1,14 @@
-# Change Log
+## [1.0.1] - 2024-11-28
+### Added
+- Initial release of the "Project Timer" extension for Visual Studio Code.
+- Feature to track time spent on individual projects with persistent storage in `.vscode/timer-data.json`.
+- Automatic prompt for timer creation when a project is opened and no timer data exists.
+- Sidebar view for displaying time spent and coder type based on time allocation.
+- Commands for saving and loading project timer data.
 
-All notable changes to the "project-time" extension will be documented in this file.
+### Changed
+- Updated the timer logic to ensure accurate tracking of active coding sessions.
+- Improved user prompts for better interaction regarding timer initialization.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-- Initial release
+### Fixed
+- Resolved issues with file path handling for storing timer data.
