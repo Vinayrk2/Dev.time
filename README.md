@@ -19,9 +19,9 @@ The **Project Timer VS Code Extension** helps developers track the time spent on
 
 | Command                     | Description                                             | Usage                                |
 |-----------------------------|---------------------------------------------------------|--------------------------------------|
-| `extension.saveProjectData` | Saves the current timer data to `.vscode/timer-data.json`. | Run to persist timer updates.        |
-| `extension.loadProjectData` | Loads the current project's timer data.                | Displays saved timer data in VS Code. |
-| `extension.promptForTimer`  | Prompts the user to create a timer if none exists.      | Automatically runs on project open.  |
+| `Save Project Data` | Saves the current timer data to `.vscode/timer-data.json`. | Run to persist timer updates.        |
+| `Load Project Data` | Loads the current project's timer data.                | Displays saved timer data in VS Code. |
+| `Development Time`  | Prompts the user to create a timer if none exists.      | Automatically runs on project open.  |
 
 ---
 
@@ -54,6 +54,6 @@ The **Project Timer VS Code Extension** helps developers track the time spent on
 
 ## Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Vinayrk2/timeline-tracker.git
+### I've published on the vs code marketplace, you can use it. Here is the link:
+
+(https://marketplace.visualstudio.com/items?itemName=vinay-dev.dev-time)[https://marketplace.visualstudio.com/items?itemName=vinay-dev.dev-time]
