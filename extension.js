@@ -2,8 +2,9 @@ const vscode = require("vscode")
 const path = require("path")
 const fs = require("fs")
 
+let tracker = null;
 function activate(context) {
-    const tracker = new TimeTracker(context.workspaceState);
+    tracker = new TimeTracker(context.workspaceState);
 
     // Register the Sidebar View
     const timerViewProvider = new TimerViewProvider(tracker);
@@ -16,7 +17,9 @@ function activate(context) {
     tracker.startTracking(timerViewProvider);
 }
 
-function deactivate() { }
+function deactivate() { 
+    tracker.updateTime()
+}
 
 // Class for managing project-specific timer data
 class TimeTracker {
