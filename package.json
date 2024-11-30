@@ -37,7 +37,7 @@
                 {
                     "id": "projectTimer",
                     "title": "Time Tracker",
-                    "icon": "media/timeline.svg"
+                    "icon": "media/timeline.jpg"
                 }
             ]
         },
@@ -54,8 +54,5 @@
         "vscode:prepublish": "npx vsce package",
         "package": "npx vsce package",
         "publish": "npx vsce publish"
-    },
-    "devDependencies": {
-        "vsce": "^2.15.0"
     }
 }
