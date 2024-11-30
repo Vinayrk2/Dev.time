@@ -2,7 +2,7 @@
     "name": "dev-time",
     "displayName": "Dev.time",
     "description": "Track the time spent on each project with a timer visible in the sidebar. Persistent per-project data storage.",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "publisher": "vinay-dev",
     "icon": "media/banner.jpg",
     "engines": {
