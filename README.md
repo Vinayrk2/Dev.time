@@ -11,7 +11,6 @@ The **Project Timer VS Code Extension** helps developers track the time spent on
 - **Project-Specific Timer**: Tracks time spent on individual projects, stored locally in `.vscode/timer-data.json`.
 - **Prompt on Open**: Automatically asks users to create a timer if none exists when a project is opened.
 - **Persistent Storage**: Timer data is saved in the `.vscode` folder, ensuring it is specific to each project.
-- **Commands**: Provides commands to save, load, and initialize project timers.
 
 ---
 
@@ -19,9 +18,9 @@ The **Project Timer VS Code Extension** helps developers track the time spent on
 
 | Command                     | Description                                             | Usage                                |
 |-----------------------------|---------------------------------------------------------|--------------------------------------|
-| `extension.saveProjectData` | Saves the current timer data to `.vscode/timer-data.json`. | Run to persist timer updates.        |
-| `extension.loadProjectData` | Loads the current project's timer data.                | Displays saved timer data in VS Code. |
-| `extension.promptForTimer`  | Prompts the user to create a timer if none exists.      | Automatically runs on project open.  |
+| `Save Project Data` | Saves the current timer data to `.vscode/timer-data.json`. | Run to persist timer updates.        |
+| `Load Project Data` | Loads the current project's timer data.                | Displays saved timer data in VS Code. |
+| `Development Time`  | Prompts the user to create a timer if none exists.      | Automatically runs on project open.  |
 
 ---
 
@@ -35,25 +34,30 @@ The **Project Timer VS Code Extension** helps developers track the time spent on
    - If no data is found, the user is prompted to create a timer.
 
 3. **Persistent Storage**:
-   - The timer data is stored in a project-specific JSON file located at `.vscode/timer-data.json`.
+   - The timer data is stored in a project-specific JSON file located at 
+   ` .vscode/timer-data.json `.
 
 4. **File Structure**:
    - Timer data is stored in JSON format. Example:
-     ```json
-     {
-       "timer": 3600,
-       "lastUpdated": "2024-11-28T12:00:00Z"
-     }
-     ```
+     
+   ```json
+   {
+   "totalTime": 5143.440999999997,
+   "otherTime": 757.906,
+   "lastUpdated": 1733042114292
+   }
+   ```
 
 5. **User Prompts**:
    - If no timer exists, the extension prompts the user with:
      > *"No timer data found for this project. Do you want to create a timer?"*
 
+6. **Updates**:
+   - Now , it stores time of project to code, tesing and resources. The extension automatically saves the time data to the JSON file.
 ---
 
 ## Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Vinayrk2/timeline-tracker.git
+### I've published on the vs code marketplace, you can use it. Here is the link:
+
+[Try "Dev.time" Extension ](https://marketplace.visualstudio.com/items?itemName=vinay-dev.dev-time)
