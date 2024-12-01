@@ -27,3 +27,6 @@
 ### Fixed
 - Addressed minor functionality.
 
+## [1.0.4] - 2024-11-29
+### Enhanced
+- Changed the format of when the last time was updated.
