@@ -26,6 +26,8 @@ class TimeTracker {
     constructor(workspaceState) {
         this.startTime = null;
         this.totalTime = 0;
+        this.otherTime = 0;
+        this.isInOtherMode = false;
         this.workspaceState = workspaceState;
         this.workspaceFolder = vscode.workspace.workspaceFolders?.[0];
         this.dataFilePath = this.workspaceFolder
@@ -39,11 +41,18 @@ class TimeTracker {
     startTracking(viewProvider) {
         vscode.window.onDidChangeWindowState((state) => {
             if (state.focused) {
-                if (!this.startTime) this.startTime = Date.now();
+                if (this.isInOtherMode) {
+                    const elapsedOtherTime = (Date.now() - this.startTime) / 1000;
+                    this.otherTime += elapsedOtherTime;
+                    this.isInOtherMode = false;
+                }
+                this.startTime = Date.now();
             } else {
                 this.updateTime();
-                if (viewProvider) viewProvider.refresh(); // Update sidebar on focus loss
+                this.startTime = Date.now();
+                this.isInOtherMode = true;
             }
+            if (viewProvider) viewProvider.refresh();
         });
 
         vscode.workspace.onDidSaveTextDocument(() => {
@@ -56,9 +65,17 @@ class TimeTracker {
     updateTime() {
         if (this.startTime) {
             const elapsedTime = (Date.now() - this.startTime) / 1000;
-            this.totalTime += elapsedTime;
-            this.saveProjectData({ totalTime: this.totalTime, lastUpdated: Date.now() });
-            this.startTime = null; // Reset the start time
+            if (this.isInOtherMode) {
+                this.otherTime += elapsedTime;
+            } else {
+                this.totalTime += elapsedTime;
+            }
+            this.saveProjectData({
+                totalTime: this.totalTime,
+                otherTime: this.otherTime,
+                lastUpdated: Date.now()
+            });
+            this.startTime = null;
         }
     }
 
@@ -84,8 +101,13 @@ class TimeTracker {
         if (fs.existsSync(this.dataFilePath)) {
             const data = JSON.parse(fs.readFileSync(this.dataFilePath, 'utf8'));
             this.totalTime = data.totalTime || 0;
+            this.otherTime = data.otherTime || 0;
         } else {
-            this.saveProjectData({ totalTime: 0, lastUpdated: Date.now() });
+            this.saveProjectData({
+                totalTime: 0,
+                otherTime: 0,
+                lastUpdated: Date.now()
+            });
         }
     }
 
@@ -114,7 +136,7 @@ class TimeTracker {
                 )
                 .then((selection) => {
                     if (selection === 'Yes') {
-                        this.saveProjectData({ totalTime: 0, lastUpdated: Date.now() });
+                        this.saveProjectData({ totalTime: 0, otherTime: 0, lastUpdated: Date.now() });
                         vscode.window.showInformationMessage('Timer initialized for this project!');
                     }
                     else{
@@ -143,22 +165,30 @@ class TimerViewProvider {
     }
 
     getChildren() {
-        const time = this.tracker.totalTime || 0;
-    
-        // Convert time to hours, minutes, and seconds
-        const hours = Math.floor(time / 3600);
-        const minutes = Math.floor((time % 3600) / 60);
-        const seconds = Math.floor(time % 60);
-    
-        // Format time as HH:MM:SS
-        const timeString = `${hours.toString().padStart(2, '0')}:${minutes
-            .toString()
-            .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    
-        // Determine coder type based on time spent
+        const formatTime = (seconds) => {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${hours.toString().padStart(2, '0')}:${minutes
+                .toString()
+                .padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        };
+
+        const codingTime = this.tracker.totalTime || 0;
+        const otherTime = this.tracker.otherTime || 0;
+        
+        // Create TreeItems for both time categories
+        const codingTimeItem = new vscode.TreeItem(`⌨️ Coding Time: ${formatTime(codingTime)}`);
+        const otherTimeItem = new vscode.TreeItem(`🕒 Other Time: ${formatTime(otherTime)}`);
+        
+        // Calculate total project time
+        const totalTime = codingTime + otherTime;
+        const totalTimeItem = new vscode.TreeItem(`⏱️ Total Project Time: ${formatTime(totalTime)}`);
+
+        // Determine coder type based on coding time only
+        const timeInMinutes = Math.floor(codingTime / 60);
         let coderType = "";
-        const timeInMinutes = Math.floor(time / 60);
-    
+        
         if (timeInMinutes === 0) {
             coderType = "Not Started Yet";
         } else if (timeInMinutes <= 10) {
@@ -173,33 +203,35 @@ class TimerViewProvider {
             coderType = "Keep Crushing It!";
         } else if (timeInMinutes <= 90) {
             coderType = "Amazing Dedication!";
+        } else if (timeInMinutes <= 120) {
+            coderType = "Coding Warrior!";
+        } else if (timeInMinutes <= 180) {
+            coderType = "Code Master!";
+        } else if (timeInMinutes <= 240) {
+            coderType = "Legendary Coder!";
         } else {
-            coderType = "Outstanding Effort!";
+            coderType = "Coding God Mode! 🔥";
         }
-    
-        // Create a TreeItem for the time display
-        const timeItem = new vscode.TreeItem(`⏱️ Time Spent: ${timeString}`);
-        timeItem.description = ""; // Keep empty as it appears like a box
-    
-        // Create a TreeItem for the coder type
+        
         const coderTypeItem = new vscode.TreeItem(`💡 Coder Type: ${coderType}`);
-        coderTypeItem.description = ""; // Empty for consistent appearance
-    
-        // Create a separator line
+        
         const separatorItem = new vscode.TreeItem("────────────────────────────");
-        separatorItem.description = ""; // Purely visual item
         separatorItem.iconPath = new vscode.ThemeIcon("dash");
-    
-        // Create a note at the bottom
+
         const noteItem = new vscode.TreeItem(
-            "Note: This time only tracks active coding in VS Code."
+            "Note: Other time tracks work outside VS Code"
         );
-        noteItem.description =
-            "Testing, output observation, etc., are excluded for now.";
+        noteItem.description = "Research, planning, etc.";
         noteItem.iconPath = new vscode.ThemeIcon("info");
-    
-        // Return all items in order to mimic the requested layout
-        return [timeItem, coderTypeItem, separatorItem, noteItem];
+
+        return [
+            totalTimeItem,
+            codingTimeItem,
+            otherTimeItem,
+            separatorItem,
+            coderTypeItem,
+            noteItem
+        ];
     }
     
 

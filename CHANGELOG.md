@@ -13,9 +13,17 @@
 ### Fixed
 - Resolved issues with file path handling for storing timer data.
 
-## [1.0.2] - 2024-12-10
+## [1.0.2] - 2024-11-28
 ### Enhanced
 - Improved the accuracy of time tracking.
 
 ### Fixed
 - Addressed minor bugs related to timer reset functionality.
+
+## [1.0.3] - 2024-11-29
+### Enhanced
+- Also added the approx. time for tesing and getting resources of time tracking.
+
+### Fixed
+- Addressed minor functionality.
+
