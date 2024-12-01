@@ -73,7 +73,7 @@ class TimeTracker {
             this.saveProjectData({
                 totalTime: this.totalTime,
                 otherTime: this.otherTime,
-                lastUpdated: Date.now()
+                lastUpdated: Date()
             });
             this.startTime = null;
         }
@@ -106,7 +106,7 @@ class TimeTracker {
             this.saveProjectData({
                 totalTime: 0,
                 otherTime: 0,
-                lastUpdated: Date.now()
+                lastUpdated: Date()
             });
         }
     }
@@ -136,7 +136,7 @@ class TimeTracker {
                 )
                 .then((selection) => {
                     if (selection === 'Yes') {
-                        this.saveProjectData({ totalTime: 0, otherTime: 0, lastUpdated: Date.now() });
+                        this.saveProjectData({ totalTime: 0, otherTime: 0, lastUpdated: Date() });
                         vscode.window.showInformationMessage('Timer initialized for this project!');
                     }
                     else{
